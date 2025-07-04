@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Photo Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        /* Header Styling */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://picsum.photos/1920/400?blur=2') center/cover;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 2rem;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #764ba2;
+        }
+
+        /* Main Gallery Container */
+        .gallery-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Gallery Grid */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* Gallery Item */
+        .gallery-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            background: white;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: all 0.4s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Image Overlay */
+        .image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 2rem 1.5rem 1.5rem;
+            transform: translateY(100%);
+            transition: all 0.4s ease;
+        }
+
+        .gallery-item:hover .image-overlay {
+            transform: translateY(0);
+        }
+
+        .image-overlay h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .image-overlay p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        /* Category Tags */
+        .category-tag {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 10;
+        }
+
+        /* Special Grid Items */
+        .gallery-item:nth-child(3n) {
+            grid-column: span 1;
+        }
+
+        .gallery-item:nth-child(7) {
+            grid-column: span 2;
+        }
+
+        .gallery-item:nth-child(7) img {
+            height: 200px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        .footer p {
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #764ba2;
+        }
+
+        .social-links {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            border-radius: 50%;
+            line-height: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: #764ba2;
+            transform: translateY(-3px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .gallery {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.5rem;
+            }
+            
+            .gallery-item:nth-child(7) {
+                grid-column: span 1;
+            }
+            
+            .filter-buttons {
+                gap: 0.5rem;
+            }
+            
+            .filter-btn {
+                padding: 0.6rem 1.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .gallery-container {
+                padding: 2rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 3rem 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .gallery {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .filter-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .gallery-item {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .gallery-item:nth-child(even) {
+            animation-delay: 0.1s;
+        }
+
+        .gallery-item:nth-child(3n) {
+            animation-delay: 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>My Photo Gallery</h1>
+            <p>Capturing moments, creating memories. Explore a curated collection of stunning photography from around the world.</p>
+        </div>
+    </header>
+
+    <!-- Filter Section -->
+    <section class="filter-section">
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="nature">Nature</button>
+            <button class="filter-btn" data-filter="city">City</button>
+            <button class="filter-btn" data-filter="people">People</button>
+            <button class="filter-btn" data-filter="architecture">Architecture</button>
+        </div>
+    </section>
+
+    <!-- Gallery Container -->
+    <main class="gallery-container">
+        <div class="gallery">
+            <!-- Gallery Items -->
+            <div class="gallery-item" data-category="nature">
+                <span class="category-tag">Nature</span>
+                <img src="https://picsum.photos/400/300?random=1" alt="Beautiful landscape">
+                <div class="image-overlay">
+                    <h3>Mountain Vista</h3>
+                    <p>Breathtaking mountain scenery captured during golden hour, showcasing nature's magnificent beauty.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="city">
+                <span class="category-tag">City</span>
+                <img src="https://picsum.photos/400/300?random=2" alt="Urban landscape">
+                <div class="image-overlay">
+                    <h3>Urban Lights</h3>
+                    <p>The vibrant energy of city life illuminated against the night sky, creating a stunning urban tapestry.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="people">
+                <span class="category-tag">People</span>
+                <img src="https://picsum.photos/400/300?random=3" alt="Portrait photography">
+                <div class="image-overlay">
+                    <h3>Human Stories</h3>
+                    <p>Candid moments that capture the essence of human emotion and connection in everyday life.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="nature">
+                <span class="category-tag">Nature</span>
+                <img src="https://picsum.photos/400/300?random=4" alt="Ocean view">
+                <div class="image-overlay">
+                    <h3>Ocean Serenity</h3>
+                    <p>Peaceful waves meeting pristine shores, offering a moment of tranquility and natural wonder.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="architecture">
+                <span class="category-tag">Architecture</span>
+                <img src="https://picsum.photos/400/300?random=5" alt="Modern building">
+                <div class="image-overlay">
+                    <h3>Modern Lines</h3>
+                    <p>Contemporary architectural design showcasing clean lines and innovative structural elements.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="city">
+                <span class="category-tag">City</span>
+                <img src="https://picsum.photos/400/300?random=6" alt="Street photography">
+                <div class="image-overlay">
+                    <h3>Street Life</h3>
+                    <p>Dynamic street scenes capturing the pulse and rhythm of metropolitan life in motion.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="nature">
+                <span class="category-tag">Nature</span>
+                <img src="https://picsum.photos/800/300?random=7" alt="Forest landscape">
+                <div class="image-overlay">
+                    <h3>Forest Pathway</h3>
+                    <p>Mystical forest trails leading into the unknown, surrounded by ancient trees and filtered sunlight.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="people">
+                <span class="category-tag">People</span>
+                <img src="https://picsum.photos/400/300?random=8" alt="Group photography">
+                <div class="image-overlay">
+                    <h3>Together</h3>
+                    <p>Moments of joy and connection shared between friends, celebrating life's precious relationships.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="architecture">
+                <span class="category-tag">Architecture</span>
+                <img src="https://picsum.photos/400/300?random=9" alt="Historic building">
+                <div class="image-overlay">
+                    <h3>Timeless Beauty</h3>
+                    <p>Historic architecture telling stories of the past through intricate details and craftsmanship.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="city">
+                <span class="category-tag">City</span>
+                <img src="https://picsum.photos/400/300?random=10" alt="City skyline">
+                <div class="image-overlay">
+                    <h3>Skyline Dreams</h3>
+                    <p>Magnificent city skylines reaching toward the heavens, symbols of human ambition and progress.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="nature">
+                <span class="category-tag">Nature</span>
+                <img src="https://picsum.photos/400/300?random=11" alt="Sunset view">
+                <div class="image-overlay">
+                    <h3>Golden Hour</h3>
+                    <p>Spectacular sunset painting the sky in brilliant hues, marking the end of another beautiful day.</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-category="people">
+                <span class="category-tag">People</span>
+                <img src="https://picsum.photos/400/300?random=12" alt="Portrait">
+                <div class="image-overlay">
+                    <h3>Expressions</h3>
+                    <p>Intimate portraits revealing the depth and complexity of human emotion and character.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>Connect With Me</h3>
+            <p>&copy; 2025 My Photo Gallery. All rights reserved.</p>
+            <p>Passionate about capturing life's beautiful moments through the lens.</p>
+            <a href="#portfolio" target="_blank">View My Complete Portfolio</a>
+            
+            <div class="social-links">
+                <a href="#" aria-label="Instagram">📷</a>
+                <a href="#" aria-label="Twitter">🐦</a>
+                <a href="#" aria-label="Facebook">📘</a>
+                <a href="#" aria-label="LinkedIn">💼</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Functional filter system
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Get the filter category
+                const filterValue = this.getAttribute('data-filter');
+                
+                // Get all gallery items
+                const galleryItems = document.querySelectorAll('.gallery-item');
+                
+                // Show/hide items based on filter
+                galleryItems.forEach(item => {
+                    const itemCategory = item.getAttribute('data-category');
+                    
+                    if (filterValue === 'all' || itemCategory === filterValue) {
+                        item.style.display = 'block';
+                        item.style.animation = 'fadeInUp 0.6s ease forwards';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
